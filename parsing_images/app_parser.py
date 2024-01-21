@@ -9,6 +9,13 @@ import aiohttp
 
 IMAGE_FOLDER = './parsing_images/images'
 
+"""
+для проверки использовал следующие адреса:
+https://p2.piqsels.com/preview/569/178/493/cc0-desktop-backgrounds-fog-foggy.jpg
+https://p0.piqsels.com/preview/201/1002/462/background-background-image-clouds-cloudy.jpg
+https://p0.piqsels.com/preview/50/408/1001/dawn-hd-wallpaper-landscape-nature.jpg
+"""
+
 
 def download_image_sync(url):
     response = requests.get(url)
@@ -31,7 +38,7 @@ async def download_image_async(url):
                     f.write(await response.read())
 
 
-# создана, чтобы обойти warning deprecation при работе через loop, для второго варианта обработки через asyncio.run
+# создана, чтобы обойти DeprecationWarning при работе через loop, для второго варианта обработки через asyncio.run
 async def download_images_asynchronous(urls):
     await asyncio.gather(*(download_image_async(url) for url in urls))
 
@@ -71,14 +78,15 @@ def main():
 
     tasks = []
     start_time = time.time()
-    # первый вариант, работаем через loop, у меня вызывает warning deprecation
-    for url in args.urls:
-        task = asyncio.ensure_future(download_image_async(url))
-        tasks.append(task)
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(asyncio.wait(tasks))
-    # второй вариант, warning deprecation не вызывает, отрабатывает без проблем
-    # asyncio.run(download_images_asynchronous(args.urls))
+    # первый вариант, работаем через loop, у меня вызывает DeprecationWarning
+    # for url in args.urls:
+    #     task = asyncio.ensure_future(download_image_async(url))
+    #     tasks.append(task)
+    # loop = asyncio.get_event_loop()
+    # loop.run_until_complete(asyncio.wait(tasks))
+
+    # второй вариант, DeprecationWarning не вызывает, отрабатывает без проблем
+    asyncio.run(download_images_asynchronous(args.urls))
     asynchronous_time = time.time() - start_time
     print(f"Асинхронный подход, сохранение за: {asynchronous_time:.4f} секунд")
 
