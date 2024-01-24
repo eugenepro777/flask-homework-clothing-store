@@ -28,7 +28,7 @@ async def read_task(request: Request, task_id: int):
     if task_id >= len(tasks):
         raise HTTPException(status_code=404, detail="Задача не найдена")
     task = pd.DataFrame([vars(t) for t in tasks if t.id == task_id]).to_html()
-    return templates.TemplateResponse("tasks.html", {"request": Request, "task": task})
+    return templates.TemplateResponse("tasks.html", {"request": request, "task": task})
 
 
 @app.post("/tasks", response_model=Task)
@@ -37,3 +37,23 @@ async def create_task(task: Task):
     task.id = task_id
     tasks.append(task)
     return task
+
+
+@app.put("/tasks/{task_id}", response_model=Task)
+async def update_task(task_id: int, task: Task):
+    if task_id >= len(tasks):
+        raise HTTPException(status_code=404, detail="Задача не найдена")
+    for i, new_task in enumerate(tasks):
+        if new_task.id == task_id:
+            task.id = task_id
+            tasks[i] = task
+            return task
+
+
+@app.delete("/tasks/{task_id}", response_model=Task)
+async def delete_task(task_id: int):
+    if task_id >= len(tasks):
+        raise HTTPException(status_code=404, detail="Задача не найдена")
+    for i, remove_task in enumerate(tasks):
+        if remove_task.id == task_id:
+            return tasks.pop(i)
