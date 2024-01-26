@@ -39,13 +39,14 @@ async def create_task(task: Task):
 
 @app.put("/tasks/{task_id}", response_model=Task)
 async def update_task(task_id: int, task: Task):
-    if task_id <= 0 or task_id > len(tasks):
-        raise HTTPException(status_code=404, detail="Задача не найдена")
     for i, new_task in enumerate(tasks):
         if new_task.id == task_id:
             task.id = task_id
             tasks[i] = task
             return task
+    else:
+        raise HTTPException(status_code=404, detail="Задача не найдена")
+        
 
 
 @app.delete("/tasks/{task_id}", response_model=Task)
