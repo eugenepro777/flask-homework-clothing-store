@@ -46,7 +46,6 @@ async def update_task(task_id: int, task: Task):
             return task
     else:
         raise HTTPException(status_code=404, detail="Задача не найдена")
-        
 
 
 @app.delete("/tasks/{task_id}", response_model=Task)
